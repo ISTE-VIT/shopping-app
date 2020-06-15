@@ -32,71 +32,35 @@ const navigator = createDrawerNavigator(
         Favourite: FavouriteScreen,
       },
       {
-        navigationOptions: () => ({
-          drawerIcon: () => {
-            return (
-              <FontAwesome name="home" style={{ fontSize: 20 }}></FontAwesome>
-            );
-          },
-        }),
+        defaultNavigationOptions:{
+          header:null
+        }
       }
     ),
     Order: createStackNavigator(
       {
-        order:OrderScreen,
+        screen:OrderScreen,
         details:DeliveryDetailsScreen,
         Cart: CartScreen,
         Favourite: FavouriteScreen,
       },
+      
       {
-        navigationOptions: () => ({
-          drawerIcon: () => {
-            return (
-              <MaterialCommunityIcons
-                name="shopping"
-                style={{ fontSize: 20 }}
-              ></MaterialCommunityIcons>
-            );
-          },
-        }),
+        defaultNavigationOptions:{
+          header:null
+        }
       }
       
     ),
-    Notifications: {
-      screen: NotificationScreen,
-      navigationOptions: () => ({
-        drawerIcon: () => {
-          return (
-            <FontAwesome name="bell" style={{ fontSize: 20 }}></FontAwesome>
-          );
-        },
-      }),
-    },
     Delivery: {
       screen: DeliveryDetailsScreen,
-      navigationOptions: () => ({
-        title: "Delivery Details",
-        drawerIcon: () => {
-          return (
-            <MaterialIcons
-              name="location-on"
-              style={{ fontSize: 20 }}
-            ></MaterialIcons>
-          );
-        },
-      }),
+      header:null
     },
 
     Settings: {
       screen: SettingsScreen,
-      navigationOptions: () => ({
-        drawerIcon: () => {
-          return (
-            <Ionicons name="ios-settings" style={{ fontSize: 20 }}></Ionicons>
-          );
-        },
-      }),
-    },
+      header: null  
+    }
   },
   {
     contentComponent: props => {

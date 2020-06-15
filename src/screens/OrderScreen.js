@@ -1,11 +1,36 @@
-import React from "react";
-import { Text,Image, View, TouchableOpacity, StyleSheet } from "react-native";
+import React , {useState}from "react";
+import { Text,Image, View, TouchableOpacity,Alert, StyleSheet } from "react-native";
 import {Feather,AntDesign } from "@expo/vector-icons";
 import SearchBar from "../components/SearchBar";
 import { FlatGrid } from "react-native-super-grid";
 import Data from "../components/Data";
+import FullData from "../components/FullData"
 
 const OrderScreen = props => {
+  const [searchMode,setSearchMode]=useState(false);
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+      setSearchMode(true)
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0 && searchMode !== false ){
+      props.navigation.navigate("Search", { data: searchData })
+
+    }
+    else if(searchMode === true){
+      Alert.alert('Sorry!',"Item currently unavailable",[
+        {text:"OK"}
+      ]);
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK"}
+      ]);
+    }
+  }
 
   return (
     <View style={{ backgroundColor: "#F6F7FC",  marginTop: 30 }} >
@@ -78,7 +103,7 @@ const OrderScreen = props => {
         </View>
       </View>
       <View style={{alignItems:"center"}}>
-        <SearchBar text='Search your orders'></SearchBar>
+      <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
       </View>
       <View>
         <FlatGrid

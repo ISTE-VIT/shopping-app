@@ -1,17 +1,49 @@
-import React from "react";
-import { View, StyleSheet, TextInput } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { View, StyleSheet, TextInput,Keyboard} from "react-native";
+import { Feather ,AntDesign} from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const SearchBar = props => {
+  const [text,setText]=useState('');
+  const textHandler = (enteredText) => {
+    setText(enteredText);
+    props.getText(enteredText);
+  }
+  const search = () =>{
+    props.searchIt()
+    setText('')
+  }
+  const cancelSearch = () =>{
+    setText('');
+    Keyboard.dismiss();
+  }
   return (
     <View style={styles.backgroundstyle}>
-      <Feather name="search" style={styles.iconStyle}></Feather>
-      <TextInput
-        style={styles.searchbar}
-        placeholder={props.text}
-        autoCapitalize="none"
-        autoCorrect={false}
-      ></TextInput>
+      <View>
+        <TouchableOpacity
+          onPress={search}
+        >
+          <Feather name="search" size={35} style={styles.iconStyle}></Feather>
+        </TouchableOpacity>
+      </View>
+      <View>
+        <TextInput
+          style={styles.searchbar}
+          placeholder={props.text}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={textHandler}
+          defaultValue ={""}
+          value={text}
+        ></TextInput>
+      </View>
+      <View style={{height:"100%",paddingTop:4}}>
+        <TouchableOpacity
+          onPress={cancelSearch}
+        >
+          <AntDesign name="close" style={styles.iconStyle} size={25}></AntDesign>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -26,14 +58,15 @@ const styles = StyleSheet.create({
     marginTop: 15,
     width: 320,
     marginLeft: 15,
+    justifyContent:"space-between"
   },
   searchbar: {
     backgroundColor: "white",
+    alignItems:"center"
   },
   iconStyle: {
-    fontSize: 35,
-    marginHorizontal: 15,
-    alignSelf: "center",
+    marginHorizontal: 7,
+    alignContent:"space-between",
   },
 });
 

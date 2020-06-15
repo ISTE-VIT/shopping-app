@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image,Alert } from "react-native";
 import SearchBar from "../components/SearchBar";
 import { FlatGrid } from "react-native-super-grid";
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
@@ -7,12 +7,33 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Context as CartContext } from "../context/CartContext";
 import { Context as PriceContext } from "../context/PriceContext";
 import AwesomeAlert from "react-native-awesome-alerts";
+import FullData from "../components/FullData"
+
 
 const SearchScreen = props => {
   const { addItem } = useContext(CartContext);
   const { addPrice } = useContext(PriceContext);
   const [alert, setAlert] = useState(false);
   const data = props.navigation.getParam("data");
+
+
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0){
+        props.navigation.navigate("Search", { data: searchData })
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK", onPress : () => console.log('closed')}
+      ]);
+    }
+  }
+
 
   return (
     <View style={styles.view}>
@@ -46,7 +67,7 @@ const SearchScreen = props => {
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <Ionicons name="ios-arrow-back" style={styles.arrow}></Ionicons>
         </TouchableOpacity>
-        <SearchBar text="Search your favourite products"></SearchBar>
+          <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
       </View>
       <FlatGrid
         items={data}

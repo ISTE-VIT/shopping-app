@@ -15,8 +15,29 @@ import {
 } from "@expo/vector-icons";
 import SearchBar from "../components/SearchBar";
 import Data from "../components/Data";
+import FullData from "../components/FullData"
+
 
 const FavouriteScreen = props => {
+
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0){
+        props.navigation.navigate("Search", { data: searchData })
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK", onPress : () => console.log('closed')}
+      ]);
+    }
+  }
+
+
   return (
     <View style={{ backgroundColor: "#F6F7FC", flex: 1, marginTop: 30 }}>
       <View style={{ backgroundColor: "#F6F7FC" }}>
@@ -104,7 +125,7 @@ const FavouriteScreen = props => {
               }}
             ></Ionicons>
           </TouchableOpacity>
-          <SearchBar text="Search your favourites" />
+          <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
         </View>
       </View>
       <View style={{ marginTop: 20, height: "75%" }}>

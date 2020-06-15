@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import SearchBar from "../components/SearchBar";
@@ -13,8 +14,34 @@ import HomeList from "../components/HomeList";
 import healthFitnessData from "../components/HealthFitnessData";
 import EssentialsData from "../components/EssentialsData";
 import FashionData from "../components/FashionData";
+import FullData from "../components/FullData"
+import { useSafeArea } from "react-native-safe-area-context";
 
 const HomeScreen = props => {
+  const [searchMode,setSearchMode]=useState(false);
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+      setSearchMode(true)
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0 && searchMode !== false ){
+      props.navigation.navigate("Search", { data: searchData })
+
+    }
+    else if(searchMode === true){
+      Alert.alert('Sorry!',"Item currently unavailable",[
+        {text:"OK"}
+      ]);
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK"}
+      ]);
+    }
+  }
   return (
     <View style={{ marginTop: 30, backgroundColor: "#F6F7FC" }}>
       <View style={{ flexDirection: "row" }}>
@@ -46,7 +73,7 @@ const HomeScreen = props => {
       </View>
       <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
         <View marginLeft={20}>
-          <SearchBar text="Search your favourite products"></SearchBar>
+          <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
         </View>
       </View>
       <ScrollView>
