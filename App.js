@@ -9,9 +9,8 @@ import CartScreen from "./src/screens/CartScreen";
 import { Provider as CartProvider } from "./src/context/CartContext";
 import { Provider as PriceProvider } from "./src/context/PriceContext";
 import OrderScreen from "./src/screens/OrderScreen";
-import NotificationScreen from "./src/screens/NotificationScreen";
 import DeliveryDetailsScreen from "./src/screens/DeliveryDetailsScreen";
-import SettingsScreen from "./src/screens/SettingsScreen";
+import PaymentScreen from "./src/screens/PaymentScreen";
 import {
   FontAwesome,
   Ionicons,
@@ -21,6 +20,8 @@ import {
 } from "@expo/vector-icons";
 import HomeScreen from "./src/screens/HomeScreen";
 import FavouriteScreen from "./src/screens/FavouriteScreen";
+import SavedAddressScreen from "./src/screens/SavedAddressScreen";
+
 const navigator = createDrawerNavigator(
   {
     Home: createStackNavigator(
@@ -30,6 +31,8 @@ const navigator = createDrawerNavigator(
         Details: DetailsScreen,
         Cart: CartScreen,
         Favourite: FavouriteScreen,
+        details:DeliveryDetailsScreen,
+
       },
       {
         defaultNavigationOptions:{
@@ -52,15 +55,21 @@ const navigator = createDrawerNavigator(
       }
       
     ),
-    Delivery: {
-      screen: DeliveryDetailsScreen,
-      header:null
-    },
+    Delivery:createStackNavigator(
+      {
+        details: DeliveryDetailsScreen,
+        Details: DetailsScreen,
+        Saved:SavedAddressScreen,
+        payment:PaymentScreen,
+      },
+      {
+        defaultNavigationOptions:{
+          header:null
+        }
+      }
 
-    Settings: {
-      screen: SettingsScreen,
-      header: null  
-    }
+      
+    )
   },
   {
     contentComponent: props => {

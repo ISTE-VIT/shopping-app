@@ -1,48 +1,103 @@
-import React, { useContext } from "react";
+import React, { useContext,useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { SliderBox } from "react-native-image-slider-box";
 import SearchBar from "../components/SearchBar";
 import { AntDesign, Feather, Ionicons, EvilIcons } from "@expo/vector-icons";
 import { Context as CartContext } from "../context/CartContext";
 import { Context as PriceContext } from "../context/PriceContext";
+import FullData from "../components/FullData"
 
 const DetailsScreen = props => {
   const { addItem } = useContext(CartContext);
   const { addPrice } = useContext(PriceContext);
   const details = props.navigation.getParam("details");
+
+  const { state, deleteItem } = useContext(CartContext);
+  const {
+    state: { price },
+    deletePrice,
+  } = useContext(PriceContext);
+
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0){
+        props.navigation.navigate("Search", { data: searchData })
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK", onPress : () => console.log('closed')}
+      ]);
+    }
+  }
+
+
   return (
     <View style={styles.view}>
-      <View style={styles.top}>
-        <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-          <Feather name="menu" style={styles.menu}></Feather>
-        </TouchableOpacity>
-        <Image
-          source={require("../../assets/logo.png")}
-          style={styles.image}
-        ></Image>
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate("Favourite")}
+      <View style={{ backgroundColor: "#F6F7FC" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          <AntDesign
-            name="hearto"
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+              <Feather name="menu" style={styles.menu}></Feather>
+            </TouchableOpacity>
+            <Image
+              style={styles.image}
+              source={require("../../assets/logo.png")}
+            ></Image>
+          </View>
+          <View
             style={{
-              fontSize: 30,
-              alignSelf: "center",
-              marginTop: 7,
-              marginLeft: 250,
-              color: "#CE1E19",
+              flexDirection: "row",
+              marginLeft: -30,
             }}
-          ></AntDesign>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => props.navigation.navigate("Cart")}>
-          <AntDesign name="shoppingcart" style={styles.icon}></AntDesign>
-        </TouchableOpacity>
+          >
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate("Favourite")}
+            >
+              <AntDesign
+                name="hearto"
+                style={{
+                  fontSize: 30,
+                  alignSelf: "center",
+                  marginTop: 7,
+                  marginRight:10,
+                  color: "#CE1E19",
+                }}
+              ></AntDesign>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate("Cart");
+              }}
+            >
+              <AntDesign
+                name="shoppingcart"
+                style={{
+                  fontSize: 30,
+                  color: "#FF2D88",
+                  marginTop: 4,
+                  marginRight: 2,
+                }}
+              ></AntDesign>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
       <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <Ionicons name="ios-arrow-back" style={styles.arrow}></Ionicons>
         </TouchableOpacity>
-        <SearchBar text="Search your favourite products"></SearchBar>
+        <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
         <EvilIcons
           name="location"
           style={{ color: "#975EFF", fontSize: 35, marginTop: 20 }}
@@ -79,10 +134,20 @@ const DetailsScreen = props => {
               justifyContent:"center",
             }}
           >
+            <TouchableOpacity
+            onPress={async () => {
+              await addItem(details, () => {
+                props.navigation.navigate("Favourite");
+              });
+              addPrice(details.price);
+            }}
+          >
             <AntDesign
               name="heart"
               style={{ fontSize: 25, color: "white"}}
             ></AntDesign>
+          </TouchableOpacity>
+            
           </View>
           <TouchableOpacity
             onPress={async () => {
@@ -128,18 +193,23 @@ const DetailsScreen = props => {
         </View>
       </View>
 
-      <View style={styles.buy}>
-        <Text
-          style={{
-            color: "white",
-            fontFamily: "Roboto",
-            fontWeight: "bold",
-            marginTop: 1,
-          }}
-        >
-          BUY NOW
+      <TouchableOpacity 
+        onPress={() => props.navigation.navigate("details")}
+        
+      >
+        <View style={styles.buy}>
+          <Text
+            style={{
+              color: "white",
+              fontFamily: "Roboto",
+              fontWeight: "bold",
+              marginTop: 1,
+            }}
+          >
+            BUY NOW
         </Text>
-      </View>
+        </View>
+      </TouchableOpacity>
       <View
         style={{
           borderWidth: 1,
@@ -147,7 +217,7 @@ const DetailsScreen = props => {
           height: 140,
           borderRadius: 10,
           marginTop: 15,
-          marginLeft: 55,
+          alignSelf:'center',
           backgroundColor: "white",
         }}
       >
@@ -251,11 +321,11 @@ const styles = StyleSheet.create({
     width: 261,
     height: 36,
     alignItems: "center",
+    alignSelf:'center',
     borderRadius: 10,
     backgroundColor: "#975EFF",
     paddingTop: 6,
     marginTop: 10,
-    marginLeft: 77,
     elevation:8
   },
   icon1: {
