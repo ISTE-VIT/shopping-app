@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image,Alert } from "react-native";
 import SearchBar from "../components/SearchBar";
 import { FlatGrid } from "react-native-super-grid";
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
@@ -7,6 +7,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Context as CartContext } from "../context/CartContext";
 import { Context as PriceContext } from "../context/PriceContext";
 import AwesomeAlert from "react-native-awesome-alerts";
+import FullData from "../components/FullData"
+
 
 const SearchScreen = props => {
   const { addItem } = useContext(CartContext);
@@ -14,39 +16,92 @@ const SearchScreen = props => {
   const [alert, setAlert] = useState(false);
   const data = props.navigation.getParam("data");
 
+
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0){
+        props.navigation.navigate("Search", { data: searchData })
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK", onPress : () => console.log('closed')}
+      ]);
+    }
+  }
+
+
   return (
     <View style={styles.view}>
-      <View style={styles.top}>
-        <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-          <Feather name="menu" style={styles.menu}></Feather>
-        </TouchableOpacity>
-        <Image
-          source={require("../../assets/logo.png")}
-          style={styles.image}
-        ></Image>
-        <Text style={styles.searchResults}>Search</Text>
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate("Favourite")}
+      <View style={{ backgroundColor: "#F6F7FC" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          <AntDesign
-            name="hearto"
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+              <Feather name="menu" style={styles.menu}></Feather>
+            </TouchableOpacity>
+            <Image
+              style={styles.image}
+              source={require("../../assets/logo.png")}
+            ></Image>
+          </View>
+          <View>
+            <Text style={styles.searchResults} >
+              Search
+            </Text>
+          </View>
+          <View
             style={{
-              fontSize: 30,
-              alignSelf: "center",
-              marginTop: 7,
-              color: "#CE1E19",
+              flexDirection: "row",
+              marginLeft: -30,
             }}
-          ></AntDesign>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => props.navigation.navigate("Cart")}>
-          <AntDesign name="shoppingcart" style={styles.icon}></AntDesign>
-        </TouchableOpacity>
+          >
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate("Favourite")}
+            >
+              <AntDesign
+                name="hearto"
+                style={{
+                  fontSize: 30,
+                  alignSelf: "center",
+                  marginTop: 7,
+                  marginRight:10,
+                  color: "#CE1E19",
+                }}
+              ></AntDesign>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate("Cart");
+              }}
+            >
+              <AntDesign
+                name="shoppingcart"
+                style={{
+                  fontSize: 30,
+                  color: "#FF2D88",
+                  marginTop: 4,
+                  marginRight: 2,
+                }}
+              ></AntDesign>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
       <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <Ionicons name="ios-arrow-back" style={styles.arrow}></Ionicons>
         </TouchableOpacity>
-        <SearchBar text="Search your favourite products"></SearchBar>
+          <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
       </View>
       <FlatGrid
         items={data}
@@ -197,8 +252,7 @@ const styles = StyleSheet.create({
   searchResults: {
     fontSize: 25,
     color: "#FF2D88",
-    marginLeft: 95,
-    marginRight: 65,
+    marginLeft:-35,
     alignSelf: "center",
     fontWeight: "bold",
   },

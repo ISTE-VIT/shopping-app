@@ -1,4 +1,4 @@
-import React from "react";
+import React ,{useContext} from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Alert
 } from "react-native";
 import {
   Feather,
@@ -14,9 +15,37 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import SearchBar from "../components/SearchBar";
-import Data from "../components/Data";
+import { Context as CartContext } from "../context/CartContext";
+import { Context as PriceContext } from "../context/PriceContext";
+import FullData from "../components/FullData"
+
 
 const FavouriteScreen = props => {
+
+  const { state, deleteItem } = useContext(CartContext);
+  const {
+    state: { price },
+    deletePrice,
+  } = useContext(PriceContext);
+
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0){
+        props.navigation.navigate("Search", { data: searchData })
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK", onPress : () => console.log()}
+      ]);
+    }
+  }
+
+
   return (
     <View style={{ backgroundColor: "#F6F7FC", flex: 1, marginTop: 30 }}>
       <View style={{ backgroundColor: "#F6F7FC" }}>
@@ -104,12 +133,12 @@ const FavouriteScreen = props => {
               }}
             ></Ionicons>
           </TouchableOpacity>
-          <SearchBar text="Search your favourites" />
+          <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
         </View>
       </View>
       <View style={{ marginTop: 20, height: "75%" }}>
         <FlatList
-          data={Data}
+          data={state}
           keyExtractor={item => {
             return (
               item.id.toString() +
@@ -134,7 +163,10 @@ const FavouriteScreen = props => {
                   borderColor: "white",
                 }}
               >
-                <TouchableOpacity onPress={() => console.log("Img")}>
+                <TouchableOpacity onPress={() => 
+                    props.navigation.navigate("Details", { details: item })
+
+                }>
                   <Image
                     source={item.imageSource}
                     style={{
@@ -198,7 +230,7 @@ const FavouriteScreen = props => {
                   >
                     <TouchableOpacity
                       onPress={() => {
-                        console.log("cart");
+                        props.navigation.navigate('Cart')
                       }}
                     >
                       <AntDesign
@@ -212,8 +244,9 @@ const FavouriteScreen = props => {
                   </View>
                   <View>
                     <TouchableOpacity
-                      onPress={() => {
-                        console.log("minus");
+                      onPress={async () => {
+                        await deleteItem(item);
+                      deletePrice(item.price);
                       }}
                     >
                       <Feather

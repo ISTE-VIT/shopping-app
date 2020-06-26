@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Alert
 } from "react-native";
 import {
   Ionicons,
@@ -17,6 +18,8 @@ import {
 import SearchBar from "../components/SearchBar";
 import { Context as CartContext } from "../context/CartContext";
 import { Context as PriceContext } from "../context/PriceContext";
+import FullData from "../components/FullData"
+
 
 const CartScreen = props => {
   const { state, deleteItem } = useContext(CartContext);
@@ -24,6 +27,24 @@ const CartScreen = props => {
     state: { price },
     deletePrice,
   } = useContext(PriceContext);
+
+  var searchData=[];
+  const searchText = (enteredText) => {
+    if(String(enteredText).length !== 0){
+      searchData = (FullData.filter(x => String(x.name.toLocaleLowerCase()).includes(enteredText.toLocaleLowerCase())));
+    }
+  }
+  const goSearch = () => {
+    if(searchData.length !== 0){
+        props.navigation.navigate("Search", { data: searchData })
+    }
+    else{
+      Alert.alert('Oops!',"Enter the item name",[
+        {text:"OK", onPress : () => console.log('closed')}
+      ]);
+    }
+  }
+
 
   return (
     <View style={{ backgroundColor: "#F6F7FC", flex: 1, marginTop: 30 }}>
@@ -57,7 +78,7 @@ const CartScreen = props => {
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <Ionicons name="ios-arrow-back" style={styles.arrow}></Ionicons>
         </TouchableOpacity>
-        <SearchBar text="Search your cart"></SearchBar>
+        <SearchBar text="Search your favourite products" getText={searchText} searchIt={goSearch}></SearchBar>
         <EvilIcons
           name="location"
           style={{ color: "#975EFF", fontSize: 35, marginTop: 20 }}
